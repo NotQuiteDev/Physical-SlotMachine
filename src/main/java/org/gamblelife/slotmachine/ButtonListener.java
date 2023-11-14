@@ -89,15 +89,15 @@ public class ButtonListener implements Listener {
                 switch (i) {
                     case 0:
                         blocks.stopChangingBlock1();
-                        Bukkit.getServer().getConsoleSender().sendMessage("1번멈추라고 명령보냄");
+
                         break;
                     case 1:
                         blocks.stopChangingBlock2();
-                        Bukkit.getServer().getConsoleSender().sendMessage("2번멈추라고 명령보냄");
+
                         break;
                     case 2:
                         blocks.stopChangingBlock3();
-                        Bukkit.getServer().getConsoleSender().sendMessage("3번멈추라고 명령보냄");
+
                         break;
                 }
                 blocks.setGameRunning(false); // 게임이 멈췄으니 상태를 업데이트합니다
