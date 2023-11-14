@@ -2,7 +2,9 @@ package org.gamblelife.slotmachine;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -94,6 +96,7 @@ public class Blocks {
             task1 = null; // 태스크를 null로 설정하여 참조를 제거
         }
         block1Stopped = true; // 블록1이 멈춤 상태로 설정
+        Bukkit.getServer().getConsoleSender().sendMessage("블록1 true");
         processGameResult();
     }
 
@@ -103,6 +106,7 @@ public class Blocks {
             task2 = null; // 태스크를 null로 설정하여 참조를 제거
         }
         block2Stopped = true; // 블록1이 멈춤 상태로 설정
+        Bukkit.getServer().getConsoleSender().sendMessage("블록2 true");
         processGameResult();
     }
 
@@ -112,6 +116,7 @@ public class Blocks {
             task3 = null; // 태스크를 null로 설정하여 참조를 제거
         }
         block3Stopped = true; // 블록1이 멈춤 상태로 설정
+        Bukkit.getServer().getConsoleSender().sendMessage("블록3 true");
         processGameResult();
     }
 
@@ -206,14 +211,16 @@ public class Blocks {
     // 게임 결과를 처리하고 상금을 지급하는 메소드
     public void processGameResult() {
         // 모든 블록이 멈췄는지 확인
+        Bukkit.getServer().getConsoleSender().sendMessage("모든블록이 멈췄는지 확인하는중");
         if (block1Stopped && block2Stopped && block3Stopped) {
             Material type1 = getBlockType(block1Coords[0], block1Coords[1], block1Coords[2]);
             Material type2 = getBlockType(block2Coords[0], block2Coords[1], block2Coords[2]);
             Material type3 = getBlockType(block3Coords[0], block3Coords[1], block3Coords[2]);
-
+            Bukkit.getServer().getConsoleSender().sendMessage("블록1,2,3 true여서 블록타입 확인함");
             // 플레이어 객체를 가져옵니다.
             Player player = getCurrentPlayer();
             if (player != null && type1 != null && type1 == type2 && type2 == type3) {
+                Bukkit.getServer().getConsoleSender().sendMessage("모든블록이 같은타입임");
                 // 모든 블록이 같은 타입일 경우 상금 배율을 적용하여 상금을 계산합니다.
                 double prizeMultiplier = getPrizeMultiplier(type1);
                 double prizeAmount = moneyManager.getBetAmount() * prizeMultiplier;
@@ -221,6 +228,18 @@ public class Blocks {
                 // 상금 지급 로직
                 moneyManager.depositPrize(player, prizeAmount); // 가정: depositPrize 메소드가 상금을 입금함
                 player.sendMessage(ChatColor.GREEN + "Congratulations! You won " + prizeAmount + "!");
+                // 당첨되었을 때 폭죽 발사
+                FireworkEffect effect = FireworkEffect.builder()
+                        .withColor(Color.RED)
+                        .withFade(Color.ORANGE)
+                        .with(FireworkEffect.Type.BALL)
+                        .trail(true)
+                        .flicker(true)
+                        .build();
+
+                // 플레이어의 위치에 폭죽을 발사합니다.
+                FireworkUtil.launchFirework(player.getLocation(), effect, 1);
+                Bukkit.broadcastMessage(ChatColor.YELLOW + "축하합니다!"+player.getName()+"님께서 슬롯머신을 돌려서" + prizeAmount + "원에 당첨되셨습니다!");
 
                 // 게임 상태를 false로 설정하여 게임을 종료합니다.
                 setGameRunning(false);
@@ -252,6 +271,7 @@ public class Blocks {
             default: return 0; // 기본값
         }
     }
+
 
 
 
