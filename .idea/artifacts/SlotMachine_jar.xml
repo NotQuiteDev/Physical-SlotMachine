@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="SlotMachine:jar">
+    <output-path>$USER_HOME$/Desktop/테스트서버/plugins</output-path>
+    <root id="archive" name="SlotMachine.jar">
+      <element id="module-output" name="SlotMachine" />
+    </root>
+  </artifact>
+</component>

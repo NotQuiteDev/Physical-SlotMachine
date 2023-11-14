@@ -1,0 +1,4 @@
+name: SlotMachine
+version: '${project.version}'
+main: org.gamblelife.slotmachine.SlotMachine
+api-version: '1.20'
