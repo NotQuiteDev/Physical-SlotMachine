@@ -1,0 +1,32 @@
+slotMachines:
+  machine1:
+    world: "world"
+    betting_button_location:
+      x: 0 # 여기에 베팅 버튼의 x 좌표를 넣으세요
+      y: 0 # 여기에 베팅 버튼의 y 좌표를 넣으세요
+      z: 0 # 여기에 베팅 버튼의 z 좌표를 넣으세요
+    start_button_location:
+      x: 0 # 여기에 시작 버튼의 x 좌표를 넣으세요
+      y: 0 # 여기에 시작 버튼의 y 좌표를 넣으세요
+      z: 0 # 여기에 시작 버튼의 z 좌표를 넣으세요
+    slot_location:
+      x: 0 # 여기에 슬롯 머신의 x 좌표를 넣으세요
+      y: 0 # 여기에 슬롯 머신의 y 좌표를 넣으세요
+      z: 0 # 여기에 슬롯 머신의 z 좌표를 넣으세요
+    direction: "NORTH" # 슬롯머신이 보고 있는 방향
+
+
+
+betAmounts:
+  - 1000
+  - 10000
+  - 100000
+  - 1000000
+  - 10000000
+
+probabilities:
+  a: 0.4
+  b: 0.1
+  c: 0.05
+  d: 0.25
+  e: 0.2
