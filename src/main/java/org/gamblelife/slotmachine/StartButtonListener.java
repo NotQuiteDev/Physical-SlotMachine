@@ -73,7 +73,7 @@ public class StartButtonListener implements Listener {
             } else if (blocks.isBlockChanging(machineKey, 3)) {
                 Bukkit.getLogger().info("[디버그] 블록 3이 변경 중입니다. 멈추는 중...");
                 blocks.stopChangingBlock(machineKey, 3);
-                Bukkit.getLogger().info("[디버그] 모든 블록이 멈췄습니다. 게임 결과 처리 중...");
+
                 blocks.processGameResult(machineKey); // 모든 블록이 멈춘 후 게임 결과 처리
             }
         } else {
