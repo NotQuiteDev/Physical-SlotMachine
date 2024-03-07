@@ -1,15 +1,12 @@
 package org.gamblelife.slotmachine;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,15 +35,15 @@ public class ButtonListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         long currentTime = System.currentTimeMillis();
-        // 마지막 상호작용 시간과 현재 시간의 차이가 100밀리초(0.1초) 미만이면 이벤트 처리를 무시합니다.
-        if (currentTime - lastInteractTime < 100) {
+        // 마지막 상호작용 시간과 현재 시간의 차이가 250밀리초(0.25초) 미만이면 이벤트 처리를 무시합니다.
+        if (currentTime - lastInteractTime < 250) {
             return;
         }
 
         lastInteractTime = currentTime;
 
         Block clickedBlock = event.getClickedBlock();
-        if (clickedBlock == null || clickedBlock.getType() != Material.BIRCH_BUTTON) return;
+        if (clickedBlock == null) return;
 
         // config에서 슬롯머신 설정을 순회
         ConfigurationSection slotMachines = plugin.getConfig().getConfigurationSection("slotMachines");
@@ -70,11 +67,13 @@ public class ButtonListener implements Listener {
                     // 게임 실행 중이면 판돈 변경을 금지하고 메시지 출력
                     Player player = event.getPlayer();
                     player.sendMessage(ChatColor.RED + "게임이 진행 중입니다. 판돈을 변경할 수 없습니다.");
+                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, 0.4F, 1.0F);
                 } else {
                     // 게임이 실행 중이지 않으면 판돈 순환 로직 실행
                     moneyManager.cycleBetAmountForMachine(key);
                     Player player = event.getPlayer();
                     player.sendMessage(ChatColor.GREEN + "판돈이 " + moneyManager.getCurrentBetAmountForMachine(key) + "원으로 설정됐습니다. (슬롯머신: " + key + ")");
+                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, 0.4F, 1.0F);
                 }
                 break;
             }

@@ -116,7 +116,7 @@ public class Blocks {
                 // 블록 위치에서 소리 재생
                 world.playSound(block.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.3f, 1.0f);
             }
-        }, 0L, 20L); // 0L은 즉시 시작, 20L은 1초마다 반복
+        }, 0L, 2L); // 0L은 즉시 시작, 20L은 1초마다 반복
 
         // 새 태스크를 맵에 저장
         blockChangeTasks.put(taskIdentifier, newTask);
@@ -140,7 +140,7 @@ public class Blocks {
         BukkitTask task = blockChangeTasks.get(taskIdentifier);
         if (task != null && !task.isCancelled()) {
             task.cancel(); // 태스크를 취소하여 블록 변경을 멈춥니다.
-            Bukkit.getLogger().info("[디버그] " + taskIdentifier + " 태스크가 취소되었습니다.");
+            //Bukkit.getLogger().info("[디버그] " + taskIdentifier + " 태스크가 취소되었습니다.");
 
             blockChangeTasks.remove(taskIdentifier); // 취소된 태스크를 맵에서 제거
 
@@ -150,7 +150,7 @@ public class Blocks {
             blockStoppedMap.put(machineKey, stoppedMap);
 
             // 필요한 경우 게임 결과 처리 로직을 추가할 수 있습니다.
-            Bukkit.getLogger().info("[디버그] " + machineKey + "의 블록 " + blockNumber + "이(가) 멈췄습니다.");
+            //Bukkit.getLogger().info("[디버그] " + machineKey + "의 블록 " + blockNumber + "이(가) 멈췄습니다.");
         }
     }
 
