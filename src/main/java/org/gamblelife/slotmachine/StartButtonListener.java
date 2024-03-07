@@ -56,7 +56,8 @@ public class StartButtonListener implements Listener {
 
             if (clickedBlock.getLocation().equals(startButtonLocation)) {
                 startGameForMachine(key, event.getPlayer());
-                clickedBlock.getWorld().playSound(startButtonLocation, Sound.UI_BUTTON_CLICK, 0.4F, 1.0F);
+                double buttonClickVolume = plugin.getConfig().getDouble("soundSettings.buttonClickVolume", 0.3);  // 기본값은 0.3
+                clickedBlock.getWorld().playSound(startButtonLocation, Sound.UI_BUTTON_CLICK, (float)buttonClickVolume, 1.0F);
                 break; // 해당하는 버튼을 찾았으니 더 이상 순회할 필요 없음
             }
         }
@@ -94,9 +95,9 @@ public class StartButtonListener implements Listener {
                 double[] probabilities = blocks.loadProbabilities();
 
                 // 각 블록 변경 시작
-                blocks.startChangingBlock(machineKey, 1, machineConfig, probabilities);
-                blocks.startChangingBlock(machineKey, 2, machineConfig, probabilities);
-                blocks.startChangingBlock(machineKey, 3, machineConfig, probabilities);
+                blocks.startChangingBlock(machineKey, 1, machineConfig);
+                blocks.startChangingBlock(machineKey, 2, machineConfig);
+                blocks.startChangingBlock(machineKey, 3, machineConfig);
 
                 player.sendMessage(ChatColor.GREEN + "게임이 시작됐습니다. 판돈: " + betAmount + " (슬롯머신: " + machineKey + ")");
             } else {

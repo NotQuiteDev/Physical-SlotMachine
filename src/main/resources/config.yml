@@ -24,9 +24,16 @@ betAmounts:
   - 1000000
   - 10000000
 
-probabilities:
-  a: 0.4
-  b: 0.1
-  c: 0.05
-  d: 0.25
-  e: 0.2
+blockProbabilities:
+  DIRT: 0.4
+  DIAMOND_BLOCK: 0.1
+  EMERALD_BLOCK: 0.05
+  IRON_BLOCK: 0.25
+  GOLD_BLOCK: 0.2
+# Each entry in blockProbabilities maps a block type to its spawn probability.
+# You can add or remove block types freely, just ensure the sum of all probabilities is 1.0 (or very close to it).
+# If the sum of probabilities does not equal 1.0, the actual spawn chances will be slightly skewed.
+
+soundSettings:
+  slotMachineVolume: 0.3  # SLOT Sound Volume
+  buttonClickVolume: 0.4  # Button Clicked sound volume

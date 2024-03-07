@@ -67,13 +67,15 @@ public class ButtonListener implements Listener {
                     // 게임 실행 중이면 판돈 변경을 금지하고 메시지 출력
                     Player player = event.getPlayer();
                     player.sendMessage(ChatColor.RED + "게임이 진행 중입니다. 판돈을 변경할 수 없습니다.");
-                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, 0.4F, 1.0F);
+                    double buttonClickVolume = plugin.getConfig().getDouble("soundSettings.buttonClickVolume", 0.3);  // 기본값은 0.3
+                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, (float)buttonClickVolume, 1.0F);
                 } else {
                     // 게임이 실행 중이지 않으면 판돈 순환 로직 실행
                     moneyManager.cycleBetAmountForMachine(key);
                     Player player = event.getPlayer();
                     player.sendMessage(ChatColor.GREEN + "판돈이 " + moneyManager.getCurrentBetAmountForMachine(key) + "원으로 설정됐습니다. (슬롯머신: " + key + ")");
-                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, 0.4F, 1.0F);
+                    double buttonClickVolume = plugin.getConfig().getDouble("soundSettings.buttonClickVolume", 0.3);  // 기본값은 0.3
+                    clickedBlock.getWorld().playSound(betButtonLocation, Sound.UI_BUTTON_CLICK, (float)buttonClickVolume, 1.0F);
                 }
                 break;
             }

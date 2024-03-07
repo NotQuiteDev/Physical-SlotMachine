@@ -9,13 +9,13 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.gamblelife.slotmachine.FireworkUtil.launchFirework;
 
 public class Blocks {
+    private List<Material> blockMaterials = new ArrayList<>();
+    private List<Double> blockProbabilities = new ArrayList<>();
     private Map<String, Map<Integer, Boolean>> blockStoppedMap = new HashMap<>();
     private Map<String, Map<Integer, BukkitTask>> taskMap = new HashMap<>();
     private MoneyManager moneyManager;
@@ -54,42 +54,27 @@ public class Blocks {
 
 
     // 특정 슬롯머신의 특정 블록 변경을 시작하는 메소드
-    public void startChangingBlock(String machineKey, int blockNumber, ConfigurationSection machineConfig, double[] probabilities) {
-        // 첫 번째 블록 위치 가져오기
+    public void startChangingBlock(String machineKey, int blockNumber, ConfigurationSection machineConfig) {
         final int[] slotLocation = {
                 machineConfig.getInt("slot_location.x"),
                 machineConfig.getInt("slot_location.y"),
                 machineConfig.getInt("slot_location.z")
         };
 
-        // 방향 가져오기
         final String direction = machineConfig.getString("direction");
 
-        // 나머지 두 블록의 위치 계산 (첫 번째 블록이 아닐 경우)
-        final int[] finalBlockLocation;
-        if (blockNumber > 1) {
-            int[][] otherBlockLocations = calculateOtherBlockLocations(slotLocation, direction);
-            finalBlockLocation = otherBlockLocations[blockNumber - 2]; // 블록 번호에 따라 위치 조정
-        } else {
-            finalBlockLocation = slotLocation; // 첫 번째 블록 위치
-        }
+        final int[] finalBlockLocation = blockNumber > 1
+                ? calculateOtherBlockLocations(slotLocation, direction)[blockNumber - 2]
+                : slotLocation;
 
-        Material[] blocks = {
-                Material.DIRT, Material.DIAMOND_BLOCK, Material.EMERALD_BLOCK, Material.IRON_BLOCK, Material.GOLD_BLOCK
-        };
+        // 블록 유형과 확률 로드
+        loadBlockProbabilities(); // Config에서 블록 유형과 확률 로드하는 메소드 호출
 
         Random random = new Random();
-
-        // 태스크 식별자 생성 (슬롯머신 키와 블록 번호를 결합)
         String taskIdentifier = machineKey + ":" + blockNumber;
-
-        // 이전에 실행 중인 동일한 태스크가 있는지 확인하고 취소
         BukkitTask existingTask = blockChangeTasks.get(taskIdentifier);
-        if (existingTask != null) {
-            existingTask.cancel();
-        }
+        if (existingTask != null) existingTask.cancel();
 
-        // 블록 변경 작업을 수행하는 태스크 생성 및 시작
         BukkitTask newTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             World world = Bukkit.getWorld(machineConfig.getString("world"));
             if (world != null) {
@@ -99,26 +84,23 @@ public class Blocks {
                 do {
                     double rand = random.nextDouble();
                     double cumulativeProbability = 0.0;
-                    newBlockType = Material.AIR; // 초기 값
+                    newBlockType = Material.AIR;
 
-                    for (int i = 0; i < blocks.length; i++) {
-                        cumulativeProbability += probabilities[i];
+                    for (int i = 0; i < blockMaterials.size(); i++) {
+                        cumulativeProbability += blockProbabilities.get(i);
                         if (rand <= cumulativeProbability) {
-                            newBlockType = blocks[i];
+                            newBlockType = blockMaterials.get(i);
                             break;
                         }
                     }
-                } while (newBlockType == block.getType()); // 이전 블록과 다를 때까지 반복
+                } while (newBlockType == block.getType());
 
-                // 블록을 새로운 블록으로 변경
                 block.setType(newBlockType);
-
-                // 블록 위치에서 소리 재생
-                world.playSound(block.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.3f, 1.0f);
+                double slotMachineVolume = plugin.getConfig().getDouble("soundSettings.slotMachineVolume", 0.3);  // 기본값은 0.3
+                world.playSound(block.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, (float)slotMachineVolume, 1.0f);
             }
-        }, 0L, 2L); // 0L은 즉시 시작, 20L은 1초마다 반복
+        }, 0L, 2L);
 
-        // 새 태스크를 맵에 저장
         blockChangeTasks.put(taskIdentifier, newTask);
     }
 
@@ -322,6 +304,39 @@ public class Blocks {
         blockLocations[2] = otherBlockLocations[1];
 
         return blockLocations;
+    }
+
+    public void loadBlockProbabilities() {
+        ConfigurationSection blockProbs = plugin.getConfig().getConfigurationSection("blockProbabilities");
+        if (blockProbs == null) {
+            plugin.getLogger().warning("Block probabilities section is missing in the config.");
+            return;
+        }
+
+        blockMaterials.clear();
+        blockProbabilities.clear();
+
+        for (String key : blockProbs.getKeys(false)) {
+            Material material = Material.matchMaterial(key.toUpperCase());
+            if (material != null) {
+                blockMaterials.add(material);
+                blockProbabilities.add(blockProbs.getDouble(key));
+            } else {
+                plugin.getLogger().warning("Invalid material in config: " + key);
+            }
+        }
+    }
+    public Material getRandomBlock() {
+        double totalProbability = blockProbabilities.stream().mapToDouble(Double::doubleValue).sum();
+        double random = Math.random() * totalProbability;
+        double current = 0;
+        for (int i = 0; i < blockProbabilities.size(); i++) {
+            current += blockProbabilities.get(i);
+            if (random <= current) {
+                return blockMaterials.get(i);
+            }
+        }
+        return blockMaterials.get(blockMaterials.size() - 1); // Fallback
     }
 
 
