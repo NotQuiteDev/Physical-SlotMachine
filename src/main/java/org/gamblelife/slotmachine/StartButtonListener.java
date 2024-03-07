@@ -62,16 +62,16 @@ public class StartButtonListener implements Listener {
         }
 
         if (blocks.isGameRunning(machineKey)) {
-            Bukkit.getLogger().info("[디버그] 게임이 진행 중입니다: " + machineKey);
+            //Bukkit.getLogger().info("[디버그] 게임이 진행 중입니다: " + machineKey);
             // 게임이 진행 중인 경우 다음 블록을 멈춥니다.
             if (blocks.isBlockChanging(machineKey, 1)) {
-                Bukkit.getLogger().info("[디버그] 블록 1이 변경 중입니다. 멈추는 중...");
+                //Bukkit.getLogger().info("[디버그] 블록 1이 변경 중입니다. 멈추는 중...");
                 blocks.stopChangingBlock(machineKey, 1);
             } else if (blocks.isBlockChanging(machineKey, 2)) {
-                Bukkit.getLogger().info("[디버그] 블록 2가 변경 중입니다. 멈추는 중...");
+                //Bukkit.getLogger().info("[디버그] 블록 2가 변경 중입니다. 멈추는 중...");
                 blocks.stopChangingBlock(machineKey, 2);
             } else if (blocks.isBlockChanging(machineKey, 3)) {
-                Bukkit.getLogger().info("[디버그] 블록 3이 변경 중입니다. 멈추는 중...");
+                //Bukkit.getLogger().info("[디버그] 블록 3이 변경 중입니다. 멈추는 중...");
                 blocks.stopChangingBlock(machineKey, 3);
 
                 blocks.processGameResult(machineKey); // 모든 블록이 멈춘 후 게임 결과 처리

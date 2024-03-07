@@ -65,11 +65,18 @@ public class ButtonListener implements Listener {
 
             // 클릭된 블록이 현재 순회 중인 슬롯머신의 베팅 버튼인지 확인
             if (clickedBlock.getLocation().equals(betButtonLocation)) {
-                // 각 슬롯머신별로 판돈 순환
-                moneyManager.cycleBetAmountForMachine(key);
-                Player player = event.getPlayer();
-                player.sendMessage(ChatColor.GREEN + "판돈이 " + moneyManager.getCurrentBetAmountForMachine(key) + "원으로 설정됐습니다. (슬롯머신: " + key + ")");
-                break; // 해당하는 버튼을 찾았으니 더 이상 순회할 필요 없음
+                // 여기서 게임 실행 상태 확인
+                if (blocks.isGameRunning(key)) {
+                    // 게임 실행 중이면 판돈 변경을 금지하고 메시지 출력
+                    Player player = event.getPlayer();
+                    player.sendMessage(ChatColor.RED + "게임이 진행 중입니다. 판돈을 변경할 수 없습니다.");
+                } else {
+                    // 게임이 실행 중이지 않으면 판돈 순환 로직 실행
+                    moneyManager.cycleBetAmountForMachine(key);
+                    Player player = event.getPlayer();
+                    player.sendMessage(ChatColor.GREEN + "판돈이 " + moneyManager.getCurrentBetAmountForMachine(key) + "원으로 설정됐습니다. (슬롯머신: " + key + ")");
+                }
+                break;
             }
         }
     }
