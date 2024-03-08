@@ -14,6 +14,8 @@ import java.util.*;
 import static org.gamblelife.slotmachine.FireworkUtil.launchFirework;
 
 public class Blocks {
+
+
     private List<Material> blockMaterials = new ArrayList<>();
     private List<Double> blockProbabilities = new ArrayList<>();
     private Map<String, Map<Integer, Boolean>> blockStoppedMap = new HashMap<>();
@@ -27,10 +29,9 @@ public class Blocks {
     public double prizeMultiplierForGold=30;
     private JavaPlugin plugin;
 
-
     private Map<String, Boolean> gameRunningMap = new HashMap<>();
 
-
+    private long slotChangeSpeed;
 
     // 특정 슬롯머신의 게임 실행 상태를 확인하는 메소드
     public boolean isGameRunning(String machineKey) {
@@ -42,13 +43,16 @@ public class Blocks {
         gameRunningMap.put(machineKey, isRunning);
     }
 
-
+    public void updateSlotChangeSpeed() {
+        slotChangeSpeed = plugin.getConfig().getLong("debugSettings.speed", 20L);  // 새로운 스피드 값으로 업데이트
+    }
 
 
 
     public Blocks(JavaPlugin plugin, MoneyManager moneyManager) {
         this.plugin = plugin;
         this.moneyManager = moneyManager;
+        this.slotChangeSpeed = plugin.getConfig().getLong("debugSettings.speed", 2L); // 생성자 내부에서 초기화합니다.
         // ... 초기화 코드 ...
     }
 
@@ -99,7 +103,8 @@ public class Blocks {
                 double slotMachineVolume = plugin.getConfig().getDouble("soundSettings.slotMachineVolume", 0.3);  // 기본값은 0.3
                 world.playSound(block.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, (float)slotMachineVolume, 1.0f);
             }
-        }, 0L, 2L);
+
+        }, 0L, slotChangeSpeed);
 
         blockChangeTasks.put(taskIdentifier, newTask);
     }

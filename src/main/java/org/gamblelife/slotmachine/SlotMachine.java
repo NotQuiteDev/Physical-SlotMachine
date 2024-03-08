@@ -7,11 +7,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public final class SlotMachine extends JavaPlugin {
+    private Blocks blocks;
     private MoneyManager moneyManager;
     private Economy econ = null;
     @Override
     public void onEnable() {
         moneyManager = new MoneyManager(econ);
+        blocks = new Blocks(this, moneyManager);
+        // SlotMachineCommandExecutor 인스턴스 생성 및 Blocks 인스턴스 전달
+        getCommand("slotmachine").setExecutor(new SlotMachineCommandExecutor(this, blocks));
         // config.yml 로드 또는 생성
         saveDefaultConfig();
         // betAmounts 설정 로드
@@ -28,13 +32,10 @@ public final class SlotMachine extends JavaPlugin {
         moneyManager = new MoneyManager(econ);
         moneyManager = new MoneyManager(econ, betAmounts);
 
-        // Blocks 클래스 인스턴스화
-        Blocks blocks = new Blocks(this, moneyManager);
 
         // ButtonListener 클래스 인스턴스화 및 리스너 등록
         ButtonListener buttonListener = new ButtonListener(this, blocks, moneyManager); // ButtonListener 인스턴스 생성
         getServer().getPluginManager().registerEvents(buttonListener, this);
-        this.getCommand("slotmachine").setExecutor(new SlotMachineCommandExecutor(this));
         new StartButtonListener(this, blocks, moneyManager);
     }
 

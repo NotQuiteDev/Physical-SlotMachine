@@ -37,3 +37,26 @@ blockProbabilities:
 soundSettings:
   slotMachineVolume: 0.3  # SLOT Sound Volume
   buttonClickVolume: 0.4  # Button Clicked sound volume
+
+rewardMultipliers:
+  tripleBlocks:
+    - block: DIAMOND_BLOCK
+      multiplier: 3.0
+    - block: EMERALD_BLOCK
+      multiplier: 2.5
+
+  doubleBlocks:
+    - block: GOLD_BLOCK
+      multiplier: 1.5
+    - block: IRON_BLOCK
+      multiplier: 1.2
+
+  specialCombinations:
+    - blocks: [DIAMOND_BLOCK, EMERALD_BLOCK, GOLD_BLOCK]
+      multiplier: 5.0
+    - blocks: [IRON_BLOCK, GOLD_BLOCK, DIAMOND_BLOCK]
+      multiplier: 4.0
+
+
+debugSettings:  #set the speed of slot change
+  speed: 20
