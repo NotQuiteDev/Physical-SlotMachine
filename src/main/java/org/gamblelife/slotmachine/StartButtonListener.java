@@ -91,8 +91,6 @@ public class StartButtonListener implements Listener {
                 blocks.setGameRunning(machineKey, true);
                 blocks.setCurrentPlayer(machineKey, player);
 
-                // 확률 배열 로드
-                double[] probabilities = blocks.loadProbabilities();
 
                 // 각 블록 변경 시작
                 blocks.startChangingBlock(machineKey, 1, machineConfig);

@@ -25,13 +25,10 @@ public final class SlotMachine extends JavaPlugin {
             getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
-
         }
 
         // MoneyManager 인스턴스를 생성합니다.
-        moneyManager = new MoneyManager(econ);
         moneyManager = new MoneyManager(econ, betAmounts);
-
 
         // ButtonListener 클래스 인스턴스화 및 리스너 등록
         ButtonListener buttonListener = new ButtonListener(this, blocks, moneyManager); // ButtonListener 인스턴스 생성

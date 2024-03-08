@@ -25,6 +25,7 @@ public class SlotMachineCommandExecutor implements CommandExecutor {
             if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
                 // 설정 파일 리로드 로직
                 plugin.reloadConfig();
+                blocks.reloadConfigMultipliers();  // Blocks를 통해 ConfigMultipliers의 설정 리로드
                 blocks.updateSlotChangeSpeed();
                 sender.sendMessage(ChatColor.GREEN + "SlotMachine 설정이 리로드되었습니다.");
                 return true;

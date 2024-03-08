@@ -15,6 +15,16 @@ import static org.gamblelife.slotmachine.FireworkUtil.launchFirework;
 
 public class Blocks {
 
+    private ConfigMultipliers configMultipliers;
+
+    // ConfigMultipliers 설정을 리로드하는 메소드
+    public void reloadConfigMultipliers() {
+        configMultipliers.reloadConfig();
+    }
+    public Blocks(ConfigMultipliers configMultipliers) {
+        this.configMultipliers = configMultipliers;
+    }
+
 
     private List<Material> blockMaterials = new ArrayList<>();
     private List<Double> blockProbabilities = new ArrayList<>();
@@ -52,7 +62,8 @@ public class Blocks {
     public Blocks(JavaPlugin plugin, MoneyManager moneyManager) {
         this.plugin = plugin;
         this.moneyManager = moneyManager;
-        this.slotChangeSpeed = plugin.getConfig().getLong("debugSettings.speed", 2L); // 생성자 내부에서 초기화합니다.
+        this.slotChangeSpeed = plugin.getConfig().getLong("debugSettings.speed", 2L);
+        this.configMultipliers = new ConfigMultipliers(plugin);// 생성자 내부에서 초기화합니다.
         // ... 초기화 코드 ...
     }
 
@@ -231,28 +242,12 @@ public class Blocks {
         return currentPlayerMap.get(machineKey);
     }
     public double getPrizeMultiplier(Material type) {
-        switch (type) {
-            case DIRT: return prizeMultiplierForDirt;
-            case DIAMOND_BLOCK: return prizeMultiplierForDiamond;
-            case EMERALD_BLOCK: return prizeMultiplierForEmerald;
-            case IRON_BLOCK: return prizeMultiplierForIron;
-            case GOLD_BLOCK: return prizeMultiplierForGold;
-            default: return 0; // 기본값
-        }
+        Double multiplier = configMultipliers.getTripleMultiplier(type);
+        return multiplier != null ? multiplier : 0; // 만약 multiplier가 null이라면 기본값 0을 반환
     }
 
-    public double[] loadProbabilities() {
-        ConfigurationSection probabilitiesSection = plugin.getConfig().getConfigurationSection("probabilities");
-        if (probabilitiesSection == null) return new double[]{0.4, 0.1, 0.05, 0.25, 0.2}; // 기본 확률 값
 
-        double[] probabilities = new double[5];
-        probabilities[0] = probabilitiesSection.getDouble("a");
-        probabilities[1] = probabilitiesSection.getDouble("b");
-        probabilities[2] = probabilitiesSection.getDouble("c");
-        probabilities[3] = probabilitiesSection.getDouble("d");
-        probabilities[4] = probabilitiesSection.getDouble("e");
-        return probabilities;
-    }
+
 
 
     // 나머지 블록 위치 계산 메소드
