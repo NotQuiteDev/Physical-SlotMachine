@@ -18,6 +18,7 @@ public class Blocks {
     private Logger logger;
     private ConfigMultipliers configMultipliers;
 
+
     // ConfigMultipliers 설정을 리로드하는 메소드
     public void reloadConfigMultipliers() {
         configMultipliers.reloadConfig();
@@ -189,22 +190,23 @@ public class Blocks {
             return; // 월드가 없으면 리턴
         }
 
-        Material blockType = null;
-        boolean allMatch = true;
-
-        logger.info("[SlotMachine] Checking block types for machine: " + machineKey);
-        // 각 블록의 타입을 확인합니다.
+        Map<Material, Integer> blockCounts = new HashMap<>();
         for (int[] location : blockLocations) {
             Block block = world.getBlockAt(location[0], location[1], location[2]);
-            if (blockType == null) {
-                blockType = block.getType();
-                logger.info("[SlotMachine] First block type: " + blockType);
-            } else if (block.getType() != blockType) {
-                allMatch = false;
-                logger.info("[SlotMachine] Different block type found: " + block.getType() + ". Stopping check.");
-                break;
-            }
+            blockCounts.put(block.getType(), blockCounts.getOrDefault(block.getType(), 0) + 1);
         }
+
+        double maxMultiplier = 0;
+
+        // 3개 모두 일치하는 경우
+        maxMultiplier = calculateTripleMultiplier(blockCounts, maxMultiplier);
+
+        // 2개만 일치하는 경우
+        maxMultiplier = calculateDoubleMultiplier(blockCounts, maxMultiplier);
+
+        // 커스텀 조합 검사
+        maxMultiplier = calculateCustomCombinations(configMultipliers, blockCounts, maxMultiplier);
+
 
         Player player = getCurrentPlayer(machineKey);
         if (player == null) {
@@ -212,15 +214,10 @@ public class Blocks {
             return; // 플레이어가 없으면 리턴
         }
 
-        if (allMatch && blockType != null) {
-            logger.info("[SlotMachine] All blocks match. Calculating prize for player: " + player.getName());
-            double prizeMultiplier = getPrizeMultiplier(blockType);
-            double prizeAmount = moneyManager.getCurrentBetAmountForMachine(machineKey) * prizeMultiplier;
-
+        if (maxMultiplier > 0) {
+            double prizeAmount = moneyManager.getCurrentBetAmountForMachine(machineKey) * maxMultiplier;
             moneyManager.depositPrize(player, prizeAmount);
-            //launchFirework(player.getLocation(), effect, 1);
-
-            player.sendMessage(ChatColor.GREEN + "축하합니다! " + prizeAmount + "원을 당첨되셨습니다!");
+            player.sendMessage(ChatColor.GREEN + "축하합니다! " + prizeAmount + "원에 당첨되셨습니다!");
             logger.info("[SlotMachine] Prize awarded to player: " + player.getName() + ". Amount: " + prizeAmount);
         } else {
             player.sendMessage(ChatColor.RED + "아쉽게도 맞추지 못했습니다. 다시 시도해보세요!");
@@ -230,6 +227,47 @@ public class Blocks {
         setGameRunning(machineKey, false);
         resetMachineState(machineKey);
         logger.info("[SlotMachine] Game and machine state reset for machine: " + machineKey);
+    }
+    private double calculateCustomCombinations(ConfigMultipliers configMultipliers, Map<Material, Integer> blockCounts, double maxMultiplier) {
+        for (Map.Entry<String, Map<Material, Integer>> entry : configMultipliers.getSpecialCombinations().entrySet()) {
+            String key = entry.getKey();
+            Map<Material, Integer> combination = entry.getValue();
+            boolean matches = true;
+            for (Map.Entry<Material, Integer> comboEntry : combination.entrySet()) {
+                Material material = comboEntry.getKey();
+                int requiredCount = comboEntry.getValue();
+                int actualCount = blockCounts.getOrDefault(material, 0);
+                if (actualCount < requiredCount) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                double multiplier = configMultipliers.getSpecialMultiplier(key);
+                maxMultiplier = Math.max(maxMultiplier, multiplier);
+            }
+        }
+        return maxMultiplier;
+    }
+
+    private double calculateTripleMultiplier(Map<Material, Integer> blockCounts, double maxMultiplier) {
+        for (Map.Entry<Material, Integer> entry : blockCounts.entrySet()) {
+            if (entry.getValue() == 3) {
+                double multiplier = plugin.getConfig().getDouble("rewardMultipliers.triples." + entry.getKey().name());
+                maxMultiplier = Math.max(maxMultiplier, multiplier);
+            }
+        }
+        return maxMultiplier;
+    }
+
+    private double calculateDoubleMultiplier(Map<Material, Integer> blockCounts, double maxMultiplier) {
+        for (Map.Entry<Material, Integer> entry : blockCounts.entrySet()) {
+            if (entry.getValue() == 2) {
+                double multiplier = plugin.getConfig().getDouble("rewardMultipliers.doubles." + entry.getKey().name());
+                maxMultiplier = Math.max(maxMultiplier, multiplier);
+            }
+        }
+        return maxMultiplier;
     }
 
     // 슬롯머신별 현재 플레이어를 저장하는 Map

@@ -97,6 +97,12 @@ public class ConfigMultipliers {
 
         logger.info("ConfigMultipliers: Configuration loaded successfully.");
     }
+    public Map<String, Map<Material, Integer>> getSpecialCombinations() {
+        return specialCombinations;
+    }
+    public Double getSpecialMultiplier(String key) {
+        return specialMultipliers.get(key);
+    }
 
     // 여기에 멀티플라이어 값을 가져오는 메소드들을 추가할 수 있어
 }
