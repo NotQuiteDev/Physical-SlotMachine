@@ -10,11 +10,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static org.gamblelife.slotmachine.FireworkUtil.launchFirework;
 
 public class Blocks {
-
+    private Logger logger;
     private ConfigMultipliers configMultipliers;
 
     // ConfigMultipliers 설정을 리로드하는 메소드
@@ -32,11 +33,7 @@ public class Blocks {
     private Map<String, Map<Integer, BukkitTask>> taskMap = new HashMap<>();
     private MoneyManager moneyManager;
     // 각 블록 타입별 상금 배율
-    public double prizeMultiplierForDirt= 2.5;
-    public double prizeMultiplierForDiamond=200;
-    public double prizeMultiplierForEmerald=1777;
-    public double prizeMultiplierForIron=15;
-    public double prizeMultiplierForGold=30;
+
     private JavaPlugin plugin;
 
     private Map<String, Boolean> gameRunningMap = new HashMap<>();
@@ -64,6 +61,7 @@ public class Blocks {
         this.moneyManager = moneyManager;
         this.slotChangeSpeed = plugin.getConfig().getLong("debugSettings.speed", 2L);
         this.configMultipliers = new ConfigMultipliers(plugin);// 생성자 내부에서 초기화합니다.
+        this.logger = plugin.getLogger();
         // ... 초기화 코드 ...
     }
 
@@ -176,59 +174,64 @@ public class Blocks {
 
 
     public void processGameResult(String machineKey) {
-        // 슬롯머신의 각 블록 위치를 가져옵니다.
+        logger.info("[SlotMachine] Processing game result for machine: " + machineKey);
+
         ConfigurationSection machineConfig = plugin.getConfig().getConfigurationSection("slotMachines." + machineKey);
-        if (machineConfig == null) return; // 슬롯머신 설정이 없으면 리턴
+        if (machineConfig == null) {
+            logger.warning("[SlotMachine] No configuration found for machine: " + machineKey);
+            return; // 슬롯머신 설정이 없으면 리턴
+        }
 
         int[][] blockLocations = getBlockLocations(machineConfig);
         World world = Bukkit.getWorld(machineConfig.getString("world"));
+        if (world == null) {
+            logger.warning("[SlotMachine] World not found for machine: " + machineKey);
+            return; // 월드가 없으면 리턴
+        }
+
         Material blockType = null;
         boolean allMatch = true;
 
+        logger.info("[SlotMachine] Checking block types for machine: " + machineKey);
         // 각 블록의 타입을 확인합니다.
         for (int[] location : blockLocations) {
             Block block = world.getBlockAt(location[0], location[1], location[2]);
             if (blockType == null) {
                 blockType = block.getType();
+                logger.info("[SlotMachine] First block type: " + blockType);
             } else if (block.getType() != blockType) {
                 allMatch = false;
+                logger.info("[SlotMachine] Different block type found: " + block.getType() + ". Stopping check.");
                 break;
             }
         }
 
-        // 슬롯머신을 사용한 플레이어 객체를 가져옵니다.
         Player player = getCurrentPlayer(machineKey);
-        if (player == null) return; // 플레이어가 없으면 리턴
+        if (player == null) {
+            logger.warning("[SlotMachine] Player not found for machine: " + machineKey);
+            return; // 플레이어가 없으면 리턴
+        }
 
         if (allMatch && blockType != null) {
-            // 모든 블록이 같은 타입일 경우 상금 배율을 적용하여 상금을 계산합니다.
+            logger.info("[SlotMachine] All blocks match. Calculating prize for player: " + player.getName());
             double prizeMultiplier = getPrizeMultiplier(blockType);
             double prizeAmount = moneyManager.getCurrentBetAmountForMachine(machineKey) * prizeMultiplier;
 
-            // 상금 지급 로직
             moneyManager.depositPrize(player, prizeAmount);
-
-            // 당첨되었을 때 폭죽 발사
-            FireworkEffect effect = FireworkEffect.builder()
-                    .withColor(Color.RED)
-                    .withFade(Color.ORANGE)
-                    .with(FireworkEffect.Type.BALL)
-                    .trail(true)
-                    .flicker(true)
-                    .build();
-            launchFirework(player.getLocation(), effect, 1);
+            //launchFirework(player.getLocation(), effect, 1);
 
             player.sendMessage(ChatColor.GREEN + "축하합니다! " + prizeAmount + "원을 당첨되셨습니다!");
-
+            logger.info("[SlotMachine] Prize awarded to player: " + player.getName() + ". Amount: " + prizeAmount);
         } else {
-            // 블록 타입이 모두 같지 않을 경우
             player.sendMessage(ChatColor.RED + "아쉽게도 맞추지 못했습니다. 다시 시도해보세요!");
+            logger.info("[SlotMachine] No match. Better luck next time for player: " + player.getName());
         }
 
-        // 게임 상태와 블록 상태를 초기화합니다.
         setGameRunning(machineKey, false);
         resetMachineState(machineKey);
+        logger.info("[SlotMachine] Game and machine state reset for machine: " + machineKey);
     }
+
     // 슬롯머신별 현재 플레이어를 저장하는 Map
     private Map<String, Player> currentPlayerMap = new HashMap<>();
 

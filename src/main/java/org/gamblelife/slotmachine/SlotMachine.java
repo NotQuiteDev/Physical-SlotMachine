@@ -12,15 +12,11 @@ public final class SlotMachine extends JavaPlugin {
     private Economy econ = null;
     @Override
     public void onEnable() {
-        moneyManager = new MoneyManager(econ);
-        blocks = new Blocks(this, moneyManager);
-        // SlotMachineCommandExecutor 인스턴스 생성 및 Blocks 인스턴스 전달
-        getCommand("slotmachine").setExecutor(new SlotMachineCommandExecutor(this, blocks));
         // config.yml 로드 또는 생성
         saveDefaultConfig();
         // betAmounts 설정 로드
         List<Integer> betAmounts = getConfig().getIntegerList("betAmounts");
-        getLogger().info("슬롯머신 플러그인 활성화됨.");
+
         if (!setupEconomy() ) {
             getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
@@ -29,11 +25,17 @@ public final class SlotMachine extends JavaPlugin {
 
         // MoneyManager 인스턴스를 생성합니다.
         moneyManager = new MoneyManager(econ, betAmounts);
+        blocks = new Blocks(this, moneyManager);
+
+        // SlotMachineCommandExecutor 인스턴스 생성 및 Blocks 인스턴스 전달
+        getCommand("slotmachine").setExecutor(new SlotMachineCommandExecutor(this, blocks));
 
         // ButtonListener 클래스 인스턴스화 및 리스너 등록
         ButtonListener buttonListener = new ButtonListener(this, blocks, moneyManager); // ButtonListener 인스턴스 생성
         getServer().getPluginManager().registerEvents(buttonListener, this);
         new StartButtonListener(this, blocks, moneyManager);
+
+        getLogger().info("슬롯머신 플러그인 활성화됨.");
     }
 
     private boolean setupEconomy() {
