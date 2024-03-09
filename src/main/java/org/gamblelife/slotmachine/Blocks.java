@@ -210,7 +210,7 @@ public class Blocks {
 
         Player player = getCurrentPlayer(machineKey);
         if (player == null) {
-            logger.warning("[SlotMachine] Player not found for machine: " + machineKey);
+            //logger.warning("[SlotMachine] Player not found for machine: " + machineKey);
             return; // 플레이어가 없으면 리턴
         }
 
@@ -221,12 +221,12 @@ public class Blocks {
             logger.info("[SlotMachine] Prize awarded to player: " + player.getName() + ". Amount: " + prizeAmount);
         } else {
             player.sendMessage(ChatColor.RED + "아쉽게도 맞추지 못했습니다. 다시 시도해보세요!");
-            logger.info("[SlotMachine] No match. Better luck next time for player: " + player.getName());
+            //logger.info("[SlotMachine] No match. Better luck next time for player: " + player.getName());
         }
 
         setGameRunning(machineKey, false);
         resetMachineState(machineKey);
-        logger.info("[SlotMachine] Game and machine state reset for machine: " + machineKey);
+        //logger.info("[SlotMachine] Game and machine state reset for machine: " + machineKey);
     }
     private double calculateCustomCombinations(ConfigMultipliers configMultipliers, Map<Material, Integer> blockCounts, double maxMultiplier) {
         for (Map.Entry<String, Map<Material, Integer>> entry : configMultipliers.getSpecialCombinations().entrySet()) {
