@@ -282,10 +282,6 @@ public class Blocks {
     public Player getCurrentPlayer(String machineKey) {
         return currentPlayerMap.get(machineKey);
     }
-    public double getPrizeMultiplier(Material type) {
-        Double multiplier = configMultipliers.getTripleMultiplier(type);
-        return multiplier != null ? multiplier : 0; // 만약 multiplier가 null이라면 기본값 0을 반환
-    }
 
 
 
@@ -367,18 +363,7 @@ public class Blocks {
             }
         }
     }
-    public Material getRandomBlock() {
-        double totalProbability = blockProbabilities.stream().mapToDouble(Double::doubleValue).sum();
-        double random = Math.random() * totalProbability;
-        double current = 0;
-        for (int i = 0; i < blockProbabilities.size(); i++) {
-            current += blockProbabilities.get(i);
-            if (random <= current) {
-                return blockMaterials.get(i);
-            }
-        }
-        return blockMaterials.get(blockMaterials.size() - 1); // Fallback
-    }
+
 
 
 }

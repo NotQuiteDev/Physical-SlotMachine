@@ -40,25 +40,25 @@ soundSettings:
 
 rewardMultipliers:
   doubles:
-    DIAMOND_BLOCK: 2.0  # 두 개의 다이아몬드 블록 일치 시 멀티플라이어
-    EMERALD_BLOCK: 1.6
-    GOLD_BLOCK: 1.5
-    IRON_BLOCK: 1.2
+    #DIAMOND_BLOCK: 2.0  # 두 개의 다이아몬드 블록 일치 시 멀티플라이어
+    #EMERALD_BLOCK: 1.6
+    #GOLD_BLOCK: 1.5
+    #IRON_BLOCK: 1.2
   triples:
-    DIAMOND_BLOCK: 3.0  # 세 개의 다이아몬드 블록 일치 시 멀티플라이어
-    EMERALD_BLOCK: 2.5
-    GOLD_BLOCK: 2.0
-    IRON_BLOCK: 1.8
+    #DIAMOND_BLOCK: 3.0  # 세 개의 다이아몬드 블록 일치 시 멀티플라이어
+    #EMERALD_BLOCK: 2.5
+    #GOLD_BLOCK: 2.0
+    #IRON_BLOCK: 1.8
   special:
-    ore_trio: # any name you want name of combinations
-      DIAMOND_BLOCK : 1
-      GOLD_BLOCK: 1
-      IRON_BLOCK: 1
-      multiplier : 3.0
-    d2_e1:
-      DIAMOND_BLOCK : 2
-      EMERALD_BLOCK : 1
-      multiplier : 10.0
+    #ore_trio: # any name you want name of combinations
+      #DIAMOND_BLOCK : 1
+      #GOLD_BLOCK: 1
+      #IRON_BLOCK: 1
+      #multiplier : 3.0
+    #d2_e1:
+      #DIAMOND_BLOCK : 2
+      #EMERALD_BLOCK : 1
+      #multiplier : 10.0
 
 
 debugSettings:  #set the speed of slot change
