@@ -3,8 +3,7 @@
 ## **개요**
 Minecraft 서버를 위한 최고의 슬롯머신 플러그인을 만나보세요. 이 플러그인은 단순함을 넘어 완전히 몰입할 수 있는 맞춤형 게임 경험을 제공합니다. 서버의 고유 환경에 쉽게 통합할 수 있도록 설계되었으며, 직관적인 `config.yml` 설정을 통해 슬롯머신의 모든 세부 사항을 완벽히 제어할 수 있습니다.
 ## 시연 영상 (Demo Video)
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/mlo2ukKmY4U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"https://www.youtube.com/embed/mlo2ukKmY4U"
 ---
 
 ## **주요 기능**
